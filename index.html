@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Six Tech | Iniciar sesión</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="logain-container">
+        <section class="login-card">
+
+            <div class= "logo">
+            <img src="logo.jpg" alt="Logo de Six-Tech" width="150px">
+            </div>
+
+            <h1>SixTech</h1>
+            <p class="subtitle">Sistema de inventario y ventas</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="usuario">Correo electrónico</label>
+                    <input 
+                    type="text"
+                    id="usuario"
+                    name="usuario"
+                    placeholder="Ingrese su correo electrónico" required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <input 
+                    type="text"
+                    id="password"
+                    name="contrasena"
+                    placeholder="Ingresa tu contraseña" required maxlength="8"
+                    >
+                </div>
+
+                <button tpye="submit">Iniciar sesión</button>
+
+                <p id="mensaje" role="status"></p>
+            </form>
+
+            <p class="access-note">
+                Acceso exclusivo para usuarios autorizados
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const formulario = document.getElementById("loginForm");
+        const mensaje = document.getElementById("mensaje");
+
+        formulario.addEventListener("submit", function(event) {
+            event.preventDefault();
+        })
+
+        mensaje.textContent = 
+            "La pantalla funciona. El acceso real se implementerá después";
+    </script>
+</body>
+</html>
