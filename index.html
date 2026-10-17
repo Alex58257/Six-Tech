@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <main class="logain-container">
+    <main class="login-container">
         <section class="login-card">
 
             <div class= "logo">
@@ -15,7 +15,8 @@
             </div>
 
             <h1>SixTech</h1>
-            <p class="subtitle">Sistema de inventario y ventas</p>
+            <p class="subtitle">Sistema de Inventario y Ventas</p>
+            <h2>¡Bienvenido!</h2>
 
             <form id="loginForm">
                 <div class="form-group">
@@ -29,15 +30,16 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="password">Contraseña</label>
                     <input 
-                    type="text"
+                    type="password"
                     id="password"
                     name="contrasena"
                     placeholder="Ingresa tu contraseña" required maxlength="8"
                     >
                 </div>
 
-                <button tpye="submit">Iniciar sesión</button>
+                <button type="submit">Iniciar sesión</button>
 
                 <p id="mensaje" role="status"></p>
             </form>
@@ -54,10 +56,9 @@
 
         formulario.addEventListener("submit", function(event) {
             event.preventDefault();
+            mensaje.textContent = 
+            "La pantalla funciona. El acceso real se implementará después";
         })
-
-        mensaje.textContent = 
-            "La pantalla funciona. El acceso real se implementerá después";
     </script>
 </body>
 </html>
