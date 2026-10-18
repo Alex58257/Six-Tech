@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SixTech | Panel principal</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <div class="logo">
+                <img src="logo.jpg" alt="Logo de Six-Tech">
+            </div>
+
+            <div>
+                <h1>SixTech</h1>
+                <p>Sistema de Inventario y Ventas</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+
+        <section class="welcome">
+            <h2>Panel principal</h2>
+            <p>Bienvenido al sistema. ¿Qué deseas hacer hoy?</p>
+        </section>
+
+        <section class="modules">
+
+            <button class="module-card-products" data-modulo="Productos">
+                <span class="module-icon">📦</span>
+                <h3>Productos</h3>
+                <p>Consultar y registrar productos</p>
+                <span class="module-link">Abrir módulo</span>
+            </button>
+
+            <button class="module-card-sales" data-modulo="Ventas">
+                <span class="module-icon">🛒</span>
+                <h3>Ventas</h3>
+                <p>Registrar una nueva venta</p>
+                <span class="module-link">Abrir módulo</span>
+            </button>
+
+            <button class="module-card-movements" data-modulo="Movimientos">
+                <span class="module-icon">📄</span>
+                <h3>Movimientos</h3>
+                <p>Consultar entradas y salidas</p>
+                <span class="module-link">Abrir módulo</span>
+            </button>
+
+            <button class="module-card-reports" data-modulo="Reportes">
+                <span class="module-icon">📊</span>
+                <h3>Reportes</h3>
+                <p>Consultar Ventas e Inventario</p>
+                <span class="module-link">Abrir módulo</span>
+            </button>
+        </section>
+
+        <div class="logout-container">
+            <button
+            type="button"
+            class="logout-container"
+            onclick="cerrarSesion()">
+            Cerrar sesión
+        </button>
+        </div>
+
+        <p id="mensaje" role="status" aria-live="polite"></p>
+    </main>
+
+    <footer>
+        <p>©️ SixTech 2026 | Sistema de gestión</p>
+    </footer>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
