@@ -135,7 +135,10 @@ body {
     gap: 22px;   
 }
 
-.module-card-products, .module-card-sales, .module-card-movements, .module-card-reports{
+.module-card-products, 
+.module-card-sales, 
+.module-card-movements, 
+.module-card-reports{
     display: block;
     width: 100%;
     background-color: white;
@@ -149,7 +152,10 @@ body {
     transition: transform 0.2sm box-shadow;
 }
 
-.module-card:hover, .module-card-products:hover{
+.module-card-products:hover, 
+.module-card-sales:hover,
+.module-card-movements:hover,
+.module-card-reports:hover{
     transform: translateY(-4px);
     box-shadow: 0 10px 25px rgba(15, 23, 42, 0,08);
 }
@@ -186,12 +192,14 @@ body {
     background-color: #d3ffb9;
 }
 
-.module-card-products h3 {
+.module-card-products h3, 
+.module-card-sales h3{
     font-size: 20px;
     margin-bottom: 9px;
 }
 
-.module-card-products p {
+.module-card-products p,
+.module-card-sales p{
     color: #64748b;
     font-size: 14px;
     line-height: 1.5;
