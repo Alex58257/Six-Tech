@@ -18,6 +18,26 @@
                 <p>Sistema de Inventario y Ventas</p>
             </div>
         </div>
+
+        <div class="user-menu">
+            <button
+            type="button"
+            class="user-menu-button"
+            id="menuButton"
+            aria-expanded="false"
+            aria-controls="menuDropdown">
+            <span class="user-icon">👤</span>
+            <span>Mi cuenta</span>
+            <span class="menu-arrow">▾</span>
+        </button>
+        <div class="menuDropdown" id="menuDropdown" hidden>
+            <button
+            type="button"
+            class="logout-button"
+            onclick="cerrarSesion()">
+            ↪Cerrar sesión</button>
+        </div>
+        </div>
     </header>
 
     <main class="dashboard-container">
@@ -57,16 +77,6 @@
                 <span class="module-link">Abrir módulo</span>
             </button>
         </section>
-
-        <div class="logout-container">
-            <button
-            type="button"
-            class="logout-container"
-            onclick="cerrarSesion()">
-            Cerrar sesión
-        </button>
-        </div>
-
         <p id="mensaje" role="status" aria-live="polite"></p>
     </main>
 

@@ -15,8 +15,8 @@ body {
     background-color: white;
     padding: 18px 6%;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 20px;
     border-bottom: 1px solid #e2e8f0;
 }
 
@@ -24,6 +24,71 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
+}
+
+.user-menu {
+    position: relative;
+}
+
+.user-menu-button{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #334155;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}   
+
+.user.menu-button:hover{
+    background-color: #f8fafc;
+}
+
+.user-icon{
+    font-size: 16px;
+}
+
+.menu-arrow{
+    font-size: 18px;
+    color: #64748b;
+}
+
+.menuDropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-height: 110px;
+    padding: 6px;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0,12);
+    z-index: 100;
+}
+
+.menuDropdown[hidden]{
+    display: none;
+}
+
+.logout-button{
+    width: 100%;
+    padding: 10px 12px;
+    background-color: white;
+    border: none;
+    border-radius: 6px;
+    color: #dc2626;
+    text-align: left;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.logout-button:hover{
+    background-color: #fef2f2;
 }
 
 .logo img{
@@ -62,4 +127,101 @@ body {
 .welcome p {
     color: #64748b;
     line-height: 1.5;
+}
+
+.modules {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;   
+}
+
+.module-card-products, .module-card-sales, .module-card-movements, .module-card-reports{
+    display: block;
+    width: 100%;
+    background-color: white;
+    border: 1px, solid, #e2e8f0;
+    border-radius: 14px;
+    padding: 25px;
+    text-align: center;
+    font-family: inherit;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.2sm box-shadow;
+}
+
+.module-card:hover, .module-card-products:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0,08);
+}
+
+.module-card:focus-visible, .module-card-products:focus-visible{
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+}
+
+.module-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 52px;
+    height: 52px;
+    font-size: 27px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+.module-card-products .module-icon{
+    background-color: #dbeafe;
+}
+
+.module-card-sales .module-icon {
+    background-color: #d1fae5;
+}
+
+.module-card-movements .module-icon {
+    background-color: #fef3c7;
+}
+
+.module-card-reports .module-icon {
+    background-color: #d3ffb9;
+}
+
+.module-card-products h3 {
+    font-size: 20px;
+    margin-bottom: 9px;
+}
+
+.module-card-products p {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.module-link {
+    color: #1d4ed8;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+.logout-container {
+    padding: 10px 15px;
+    background-color: white;
+    color: #dc2626;
+    border: 1px solid #dc2626;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    justify-content: center;
+    text-align: center;
+    transition: background-color 0.2s, color 0.2;
+    margin-top: 20px;
+}
+
+.logout-container:hover {
+    display: flex;
+    justify-content: flex-end;
+
+
 }
