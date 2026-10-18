@@ -264,7 +264,7 @@ footer {
     }
 
     .modules {
-        grid-template-columns: 1fr;
+        grid-template-columns: 2fr;
         gap: 15px;
     }
 
