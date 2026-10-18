@@ -232,6 +232,7 @@ footer {
     font-size: 12px;
 }
 
+/* DISEÑO PARA CELULARES */
 @media (max-width: 600px) {
     .topbar {
         padding: 15px;
@@ -264,7 +265,7 @@ footer {
     }
 
     .modules {
-        grid-template-columns: 2fr;
+        grid-template-columns: 1fr;
         gap: 15px;
     }
 
