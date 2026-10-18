@@ -113,9 +113,10 @@ button:active{
 
 #mensaje{
     margin-top: 15px;
-    color: #ef2323;
+    color: #b91c1c;
     font-size: 16px;
     text-align: center;
+    line-height: 1.5;
 }
 
 .access-note{
