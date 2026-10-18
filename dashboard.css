@@ -160,7 +160,10 @@ body {
     box-shadow: 0 10px 25px rgba(15, 23, 42, 0,08);
 }
 
-.module-card:focus-visible, .module-card-products:focus-visible{
+.module-card-products:focus-visible,
+.module-card-sales:focus-visible,
+.module-card-movements:focus-visible,
+.module-card-reports:focus-visible{
     outline: 3px solid #93c5fd;
     outline-offset: 3px;
 }
@@ -185,7 +188,7 @@ body {
 }
 
 .module-card-movements .module-icon {
-    background-color: #fef3c7;
+    background-color: #e7cf72;
 }
 
 .module-card-reports .module-icon {
@@ -193,13 +196,17 @@ body {
 }
 
 .module-card-products h3, 
-.module-card-sales h3{
+.module-card-sales h3,
+.module-card-movements h3,
+.module-card-reports h3{
     font-size: 20px;
     margin-bottom: 9px;
 }
 
 .module-card-products p,
-.module-card-sales p{
+.module-card-sales p,
+.module-card-movements p,
+.module-card-reports p{
     color: #64748b;
     font-size: 14px;
     line-height: 1.5;
@@ -212,24 +219,64 @@ body {
     margin-top: 30px;
 }
 
-.logout-container {
-    padding: 10px 15px;
-    background-color: white;
-    color: #dc2626;
-    border: 1px solid #dc2626;
-    border-radius: 14px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    justify-content: center;
-    text-align: center;
-    transition: background-color 0.2s, color 0.2;
+#mensaje{
     margin-top: 20px;
+    color: #1d4ed8;
+    font-size: 14px;
 }
 
-.logout-container:hover {
-    display: flex;
-    justify-content: flex-end;
-
-
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+    font-size: 12px;
 }
+
+@media (max-width: 600px) {
+    .topbar {
+        padding: 15px;
+    }
+
+    .logo img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .brand {
+        gap: 10px;
+    }
+
+    .brand h1 {
+        font-size: 20px;
+    }
+
+    .brand p {
+        max-width: 180px;
+        line-height: 1.4;
+    }
+
+    .dashboard-container{
+        padding: 30px 16px;
+    }
+
+    .welcome h2 {
+        font-size: 24px;
+    }
+
+    .modules {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .module-card-products, 
+    .module-card-sales,
+    .module-card-movements,
+    .moodule-card-reports {
+        padding: 22px;
+    }
+
+    .logout-container {
+        margin-top: 20px;
+    }
+}
+
