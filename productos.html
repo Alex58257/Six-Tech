@@ -18,7 +18,7 @@
         <a href="dashboard.html" class="back-button">← Panel principal</a>
     </header>
 
-    <main class="page-conteiner">
+    <main class="page-container">
         <section class="page-heading">
             <div>
                 <h2>Productos</h2>
@@ -28,24 +28,24 @@
             <button type="button" id="newProductButton" class="primary-button"> + Nuevo producto</button>
         </section>
 
-        <section class="stat-grid">
+        <section class="stats-grid">
             <article class="stat-card">
-                <span class="stat-label">Tipos de productos</span>
+                <span class="stat-label">Tipos de productos:</span>
                 <strong id="totalProducts">0</strong>
             </article>
 
             <article class="stat-card">
-                <span class="stat-label">Unidades en inventario</span>
+                <span class="stat-label">Unidades en inventario:</span>
                 <strong id="totalUnits">0</strong>
             </article>
 
             <article class="stat-card">
-                <span class="stat-label">Productos con pocas existencias</span>
+                <span class="stat-label">Productos con pocas existencias:</span>
                 <strong id="lowStock">0</strong>
             </article>
         </section>
 
-        <section clas="form-card" id="productFormSection" hidden>
+        <section class="form-card" id="productFormSection" hidden>
             <h3 id="formTitle">Registrar producto</h3>
             <form id="productForm">
                 <input type="hidden" id="productId">
@@ -60,6 +60,15 @@
                             maxlength="30"
                             placeholder="Ej. CEL-001">
                     </div>
+                
+                <div class="form-group">
+                    <label for="productCategory">Categorias</label>
+                    <select id="productCategory" required>
+                        <option value="">Selecciona una categoría</option>
+                        <option value="Celulares">Celulares</option>
+                        <option value="Accesorios">Accesorios</option>
+                    </select>
+                </div>
 
                 <div class="form-group">
                     <label for="productName">Nombre del producto</label>
@@ -74,7 +83,7 @@
                 <div class="form-group">
                     <label for="productPrice">Precio de venta ($)</label>
                     <input 
-                        type="text"
+                        type="number"
                         id="productPrice"
                         required
                         min="0.01"
@@ -105,7 +114,7 @@
                 </div>
             </div>
 
-            <p id="formMesagge" class="form-message" role="stats"></p>
+            <p id="formMessage" class="form-message" role="status"></p>
 
                 <div class="form-actions">
                     <button
@@ -152,7 +161,7 @@
                 </table>
             </div>
 
-            <p id="emptyMessage" class="emptyMessage" hidden>No se encontraron productos</p>
+            <p id="emptyMessage" class="empty-message" hidden>No se encontraron productos</p>
         </section>
 
         <p id="pageMessage" class="page-message" role="status" aria-live="polite"></p>
