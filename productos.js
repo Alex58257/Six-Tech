@@ -31,6 +31,26 @@ const exampleProducts = [
         stock: 7,
         minStock: 2
     },
+
+    {
+        id: "P004",
+        code: "ACC-002",
+        name: "SONY WF-C500",
+        category: "Accesorios",
+        price: 1500,
+        stock: 7,
+        minStock: 3
+    },
+
+    {
+        id: "POO5",
+        code: "CEL-003",
+        name: "Samsung Galaxy A57",
+        category: "Celulares",
+        price: 8400,
+        stock: 25,
+        minStock: 8
+    }
 ];
 
 /* Se muestra los elementos del HTML */
