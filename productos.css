@@ -321,3 +321,105 @@ tbody tr:hover{
 .delete-button:hover{
     background-color: #fee2e2;
 }
+
+.empty-message{
+    padding: 25px 10px;
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.page-message{
+    color: #1d4ed8;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+    background-color: white;
+}
+
+@media (max-width: 700px) {
+    .topbar {
+        padding: 15px;
+    }
+
+    .logo {
+        width: 48px;
+        height: 48px;
+    }
+
+    .brand {
+        gap: 10px;
+    }
+
+    .brand h1 {
+        font-size: 20px;
+    }
+
+    .brand p {
+        max-width: 160px;
+        line-height: 1.4;
+    }
+
+    .back-button {
+        font-size: 12px;
+        text-align: right;
+    }
+
+    .page-container {
+        padding: 25px 15px;
+    }
+
+    .page-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .page-heading h2 {
+        font-size: 24px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .stat-card {
+        padding: 17px;
+    }
+
+    .stat-card strong {
+        font-size: 24px;
+    }
+
+    .form-card,
+    .table-card {
+        padding: 17px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .table-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .search-input {
+        max-width: none;
+    }
+
+    .form-actions{
+        flex-direction: column-reverse;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+}
