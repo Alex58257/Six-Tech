@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SixTech | Ventas </title>
+    <link rel="stylesheet" href="ventas.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <img src="logo.jpg" alt="Logo de SixTech" class="logo">
+            <div>
+                <h1>SixTech</h1>
+                <p>Sistema de Inventario y Ventas</p>
+            </div>
+        </div>
+        <a href="dashboard.html" class="back-button">← Panel principal</a>
+    </header>
+
+    <main class="page-container">
+        <section class="page-heading">
+            <div>
+                <h2>Registro de Ventas</h2>
+                <p>Seleccione productos y registra el pago.</p>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <span>Ventas registradas</span>
+                <strong id="totalSales">0</strong>
+            </article>
+            <article class="stat-card">
+                <span>Ingresos acumulados</span>
+                <strong id="totalRevenue">$0.00</strong>
+            </article>
+        </section>
+
+        <section class="panel">
+            <h3>Agregar productos</h3>
+
+            <div class="product-selector">
+                <div class="form-group">
+                    <label for="productSelect">Producto</label>
+                    <select id="productSelect">
+                        <option value="">Seleccione un producto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantityInput">Cantidad</label>
+                    <input type="number" id="quantityInput"
+                            min="1" step="1" value="1">
+                </div>
+
+                <button type="button" id="addProductButton" 
+                        class="primary-button">
+                        Agregar
+                </button>
+            </div>
+            <p id="productMessage" class="message" role="status"></p>
+        </section>
+
+        <section class="panel">
+            <h3>Carrito de ventas</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio Unitario</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cartTableBody"></tbody>
+                </table>
+            </div>
+
+            <p id="cartEmpty" class="empty-message">
+                Agregar productos para comenzar una venta
+            </p>
+
+            <div class="total-row">
+                <span>Total a pagar</span>
+                <strong id="saleTotal">$0.00</strong>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h3>Datos del pago</h3>
+            
+            <div class="form-group payment-group">
+                <label for="paymentMethod">Método de pago</label>
+                <select id="paymentMethod">
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Tarjeta">Tarjeta</option>
+                    <option value="Transferencia">Transferencia</option>
+                </select>
+            </div>
+
+            <div class="form-group payment-group" id="cashGroup">
+                <label for="amountReceived">Importe recibido (MXN)</label>
+                <input type="number" id="amountReceived"
+                        min="0" step="0.01" placeholder="0.00">
+                <p id="changeMessage" class="message">
+                    Cambio: $0.00
+                </p>
+            </div>
+
+            <p id="paymentNotice" class="notice" hidden></p>
+
+            <button type="button" id="completeSaleButton"
+                    class="primary-button">
+                Confirmar venta
+            </button>
+
+            <p id="saleMessage" class="message" role="status"></p>
+        </section>
+
+        <section class="panel">
+            <h3>Historial de ventas</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Fecha</th>
+                            <th>Productos</th>
+                            <th>Pago</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody"></tbody>
+                </table>
+            </div>
+            <p id="salesEmpty" class="empty-message">
+                Todavía no hay ventas registradas
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>SixTech ©️ 2026| Sistema de gestión</p>
+    </footer>
+
+    <script src="ventas.js"></script>
+</body>
+</html>
