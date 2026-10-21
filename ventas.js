@@ -198,7 +198,7 @@ addProductButton.addEventListener("click", function() {
 
 /* Quitar producto del carrito */
 cartTableBody.addEventListener("click", function(event) {
-    const button = event.target.closest(["data-remove-id"]);
+    const button = event.target.closest("[data-remove-id]");
 
     if(!button) {
         return;
@@ -207,7 +207,7 @@ cartTableBody.addEventListener("click", function(event) {
     const id = button.dataset.removeId;
 
     cart = cart.filter(function(item) {
-        return item.id !== id;
+        return String(item.id) !== String(id);
     });
 
     renderCart();
