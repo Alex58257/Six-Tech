@@ -28,6 +28,21 @@ let products = [];
 let sales = [];
 let cart = [];
 
+/* Se hará que se muestre mensajes de manera temporal */
+let messageTimer;
+
+function showProductMessage(message, type= "success") {
+    productMessage.textContent = message;
+    productMessage.className = "message " + type;
+
+    clearTimeout(messageTimer);
+
+    messageTimer = setTimeout(function() {
+        productMessage.textContent = "";
+        productMessage.className = "message";
+    }, 2500);
+}
+
 /*FORMATO DE MONEDA */
 function formatPrice(value) {
     return Number(value).toLocaleString("es-Mx", {
@@ -175,7 +190,7 @@ addProductButton.addEventListener("click", function() {
 
     if (quantityInCart + quantity > Number(product.stock)) {
         productMessage.textContent =
-            "No hay existencias suficientes para esa cantidad";
+            "No hay existencias suficientes para esa cantidad", "error";
         return;
     }
 
@@ -192,7 +207,7 @@ addProductButton.addEventListener("click", function() {
     }
 
     quantityInput.value = "1";
-    productMessage.textContent = "Producto agregado al carrito";
+    showProductMessage("Producto agregado al carrito", "success");
     renderCart();
 });
 
@@ -210,6 +225,7 @@ cartTableBody.addEventListener("click", function(event) {
         return String(item.id) !== String(id);
     });
 
+    showProductMessage("Producto eliminado del carrito", "error")
     renderCart();
 });
 
