@@ -162,7 +162,7 @@ addProductButton.addEventListener("click", function() {
     const quantity = Number(quantityInput.value);
 
     if (!id) {
-        productMessage.textContent = "Selecciona un producto";
+        showProductMessage("Seleccione un producto", "error");
         return;
     }
 
