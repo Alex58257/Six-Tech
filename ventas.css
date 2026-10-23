@@ -121,6 +121,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    text-align: center;
     padding: 22px;
     background-color: var(--surface);
     border: 1px solid var(--border);
@@ -284,10 +285,136 @@ button:disabled {
     text-align: center;
 }
 
-
 .message.error {
     color: #991b1b;
     background-color: #fee2e2;
     border: 1px solid #fca5a5;
     text-align: center;
 }
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.total-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 18px;
+    background-color: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+}
+
+.total-row span {
+    color: #475569;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.payment-group {
+    max-width: 450px;
+    margin-bottom: 18px;
+}
+
+#changeMessage {
+    font-weight: 600;
+}
+
+#paymentNotice {
+    padding: 12px 14px;
+    margin: 12px 0;
+    color: #92400e;
+    background-color: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+#paymentNotice[hidden],
+#cashGroup[hidden] {
+    display: none !important;
+}
+
+table {
+    width: 100%;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+th, 
+td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+th {
+    color: #334155;
+    font-weight: 700;
+}
+
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.empty-message {
+    padding: 22px;
+    text-align: center;
+    color: var(--muted);
+    background-color: var(--surface);
+    border-top: 1px solid var(---border);
+    font-size: 13px;
+}
+
+.empty-message:empty {
+    display: none;
+}
+
+footer {
+    padding: 22px 15px;
+    margin-top: 35px;
+    text-align: center;
+    color: var(--muted);
+    background-color: var(--surface);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+}
+
+/* Adaptación para tabletas */
+@media (max-width: 768px) {
+    .topbar {
+        padding: 16px 4%;
+    }
+
+    .page-container {
+        width: 92%;
+        margin: 24px auto;
+    }
+
+    .panel {
+        padding: 20px;
+    }
+
+    .stat-card {
+        padding: 18px;
+    }
+
+    th,
+    td {
+        padding: 12px;
+    }
+};
