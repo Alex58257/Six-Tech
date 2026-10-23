@@ -417,4 +417,87 @@ footer {
     td {
         padding: 12px;
     }
-};
+}
+
+/* Adaptación a los celulares */
+@media (max-width: 520px) {
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .brand .logo {
+        width: 42px;
+        height: 42px;
+    }
+
+    .brand h1 {
+        font-size: 20px;
+    }
+
+    .page-container {
+        width: 94%;
+        margin: 20px auto;
+    }
+
+    .page-heading {
+        font-size: 23px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .stat-card strong {
+        font-size: 22px;
+    }
+
+    .panel {
+        padding: 16px;
+        margin-bottom: 18px;
+    }
+
+    .panel h3 {
+        font-size: 18px;
+    }
+
+    .product-selector {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .product-selector .primary-button {
+        width: 100%;
+    }
+
+    .payment-group {
+        max-width: none;
+    }
+
+    .total-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+        padding: 16px;
+    }
+
+    .total-row strong {
+        font-size: 22px;
+    }
+
+    .table-wrapper {
+        border-radius: 8px;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    footer {
+        padding: 18px 12px;
+    }
+}
