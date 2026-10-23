@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SixTech | Movimientos</title>
+    <link rel="stylesheet" href="movimientos.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <img src="logo.jpg" alt="Logo de SixTech" class="logo">
+
+            <div>
+                <h1>SixTech</h1>
+                <p>Sistema de Inventario y Venta</p>
+            </div>
+        </div>
+
+        <a href="dashboard.html" class="back-button">← Panel principal</a>
+    </header>
+
+    <main class="page-container">
+        <section class="page-heading">
+            <div>
+                <h2>Movimientos de inventario</h2>
+                <p>
+                    Consulta las entradas, salidas y ajustes de los productos.
+                </p>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <span>Total de movimientos</span>
+                <strong id="totalMovements">0</strong>
+            </article>
+
+            <article class="stat-card">
+                <span>Entradas</span>
+                <strong id="totalEntries">0</strong>
+            </article>
+
+            <article class="stat-card">
+                <span>Salidas</span>
+                <strong id="totalExits">0</strong>
+            </article>
+            
+            <article class="stat-card">
+                <span>Ajustes</span>
+                <strong id="totalAdjustments">0</strong>
+            </article>
+        </section>
+
+        <section class="panel">
+            <h3>Buscar movimientos</h3>
+
+            <div class="filters-grid">
+
+                <div class="form-group">
+                    <label for="searchMovement">Buscar producto</label>
+
+                    <input 
+                        type="search"
+                        id="searchMovement"
+                        placeholder="Nombre o código del producto">
+                </div>
+
+                <div class="form-group">
+                    <label for="movementType">Tipo de movimiento</label>
+
+                    <select id="movementType">
+                        <option value="">Todos los movimientos</option>
+                        <option value="Entrada">Entrada</option>
+                        <option value="Salida">Salida</option>
+                        <option value="Ajuste">Ajuste</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="startDate">Fecha inicial</label>
+
+                    <input type="date" id="endDate">
+                </div>
+
+                <button
+                    type="button"
+                    id="clearFiltersButton"
+                    class="secondary-button"
+                    >
+                        Limpiar filtros
+                </button>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-heading">
+                <h3>Historial de Movimientos</h3>
+
+                <button
+                    type="button"
+                    id="newMovementButton"
+                    class="primary-button"
+                >   + Registrar movimiento
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Código</th>
+                            <th>Tipo</th>
+                            <th>Cantidad</th>
+                            <th>Existencia resultante</th>
+                            <th>Observaciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="movementsTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <p id="movementsEmpty" class="empty-message">No hay movimientos registrados.</p>
+            <p id="movementsMessage" class="message" role="status"></p>
+        </section>
+    </main>
+</body>
+</html>
