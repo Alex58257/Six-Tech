@@ -125,9 +125,86 @@
                 </table>
             </div>
 
-            <p id="movementsEmpty" class="empty-message">No hay movimientos registrados.</p>
+            <p id="movementsEmpty" class="empty-message">
+                No hay movimientos registrados.
+            </p>
             <p id="movementsMessage" class="message" role="status"></p>
         </section>
+
+        <section class="panel" id="movementFormPanel" hidden>
+            <h3>Registrar movimiento</h3>
+
+            <form id="movementForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="movementProduct">Producto</label>
+
+                        <select id="movementProduct" required>
+                            <option value="">Selecciona un producto</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newMovementType">Tipo de movimiento</label>
+
+                        <select id="newMovementType" required>
+                            <option value="">Selecciona una opción</option>
+                            <option value="Entrada">Entrada</option>
+                            <option value="Salida">Salida</option>
+                            <option value="Ajuste">Ajuste</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="movementQuantity">Cantidad</label>
+
+                        <input 
+                            type="number"
+                            id="movementQuantity"
+                            min="0"
+                            step="1"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="movementsNotes">Observaciones</label>
+
+                        <input 
+                            type="text"
+                            id="movementNotes"
+                            maxlength="200"
+                            placeholder="Motivo de movimiento"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Guardar movimiento
+                    </button>
+
+                    <button
+                        type="button"
+                        id="cancelMovementButton"
+                        class="secondary-button"
+                    > 
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </section>
     </main>
+
+    <footer>
+        <p>SixTech ©️ 2026 | Sistema de gestión</p>
+    </footer>
+    <script src="movimientos.js"></script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 
 const PRODUCTS_KEY = "sixtech_products";
 const SALES_KEY = "sixtech_sales";
+const MOVEMENTS_KEY = "sixtech_movements";
 
 /*Elemento del HTML*/
 const productSelect = document.getElementById("productSelect");
@@ -370,6 +371,7 @@ completeSaleButton.addEventListener("click", function() {
                 return {
                     id: item.id,
                     code: item.code,
+                    name: item.name,
                     price: item.price,
                     quantity: item.quantity,
                     subtotal: item.price * item.quantity
@@ -381,14 +383,71 @@ completeSaleButton.addEventListener("click", function() {
             change: method === "Efectivo" ? received - total : 0
         };
 
-        /* GUARDAR VENTA E INVENTARIO */
+        /* GUARDAR VENTA, INVENTARIO Y MOVIMIENTOS */
         try {
             const originalProductsStorage =
                 localStorage.getItem(PRODUCTS_KEY);
             const originalSalesStorage =
                 localStorage.getItem(SALES_KEY);
 
+            const originalMovementsStorage =
+                localStorage.getItem(MOVEMENTS_KEY);
+            
+            const savedMovements =
+                originalMovementsStorage === null
+                    ? []
+                    : JSON.parse(originalMovementsStorage);
+            
+            if (!Array.isArray(savedMovements)) {
+                throw new Error("El historial de movimientos no es válido");
+            }
+
+            //Crear una salida por cada producto vendido
+            const saleDate = new Date().toISOString();
+
+            const newMovements = cart.map(function(item) {
+                const originalProduct = products.find(function(product) {
+                    return String(product.id) === String(item.id);
+                });
+
+                const updatedProduct = updatedProducts.find(function(product) {
+                    return String(product.id) == String(item.id);
+                });
+
+                if(!originalProduct || !updatedProduct) {
+                    throw new Error (
+                        "No se encontró un producto de la venta."
+                    );
+                }
+
+                return {
+                    id: sale.id + "-" + item.id,
+                    date: saleDate,
+
+                    productId: item.id,
+                    productName: item.name,
+                    productCode: item.code,
+
+                    type: "Salida",
+                    quantity: item.quantity,
+
+                    previousStock: Number(originalProduct.stock),
+                    resultingStock: Number(updatedProduct.stock),
+
+                    notes: "Salida automática por venta" + sale.id
+                };
+            });
+            
+            // Preparar los nuevos historiales
+            const updatedSales = [...sales, sale];
+            const updatedMovements = [
+                ...newMovements,
+                ...savedMovements
+            ];
+
             try {
+                // Guardar los tres registros
+
                 localStorage.setItem(
                     PRODUCTS_KEY,
                     JSON.stringify(updatedProducts)
@@ -396,52 +455,61 @@ completeSaleButton.addEventListener("click", function() {
 
                 localStorage.setItem(
                     SALES_KEY,
-                    JSON.stringify([...sales, sale])
+                    JSON.stringify(updatedSales)
+                );
+
+                localStorage.setItem(
+                    MOVEMENTS_KEY,
+                    JSON.stringify(updatedMovements)
                 );
             } catch (error) {
-                /* INTENTAR EL RESTAURO DE AMBOS REGISTROS */
+                //Si llega a fallar el guardado, se intenta restaurar los datos originales
+
                 try {
                     if (originalProductsStorage === null) {
                         localStorage.removeItem(PRODUCTS_KEY);
                     } else {
                         localStorage.setItem(
-                            PRODUCTS_KEY, originalProductsStorage
+                            SALES_KEY,
+                            originalSalesStorage
                         );
                     }
 
-                    if (originalSalesStorage === null) {
-                        localStorage.removeItem(SALES_KEY);
+                    if (originalMovementsStorage === null) {
+                        localStorage.removeItem(MOVEMENTS_KEY);
                     } else {
                         localStorage.setItem(
-                            SALES_KEY, originalSalesStorage
+                            MOVEMENTS_KEY,
+                            originalMovementsStorage
                         );
                     }
-                } catch (restoreError) {
-                    console.error("No se pudieron restaurar los datos", restoreError);
+                }   catch (restoreError) {
+                    console.error(
+                        "No se pudieron restaurar los datos", restoreError
+                    );
                 }
 
                 throw error;
             }
 
+            //Actualizar los datos en memoria
             products = updatedProducts;
-            sales = [...sales, sale];
+            sales = updatedSales;
             cart = [];
 
             amountReceived.value = "";
             productSelect.value = "";
             quantityInput.value = "1";
 
+            //Actualizar las pantallas
             renderProductsOptions();
             renderCart();
             renderSales();
 
             saleMessage.textContent =
                 "Venta" + sale.id + " registrada correctamente.";
-
         } catch (error) {
             console.error("Error al registrar la venta", error);
-            products = previousProducts;
-            sales = previousSales;
 
             saleMessage.textContent =
                 "No se pudo guardar la venta. Revisa el almacenamiento del navegador.";
