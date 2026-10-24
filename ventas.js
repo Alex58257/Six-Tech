@@ -99,8 +99,8 @@ async function loadSales() {
     }
     
     if (salesData.length === 0) {
-        sales = []
-        renderSales()
+        sales = [];
+        renderSales();
         return;
     }
 
@@ -108,13 +108,76 @@ async function loadSales() {
         return sale.id;
     });
 
-    const {data: itemData, error: itemsError} =
+    const {data: itemsData, error: itemsError} =
         await supabaseClient
             .from("sale_items")
             .select("*")
             .in("sale_id", saleIds);
+    
+    if (itemsError) {
+        console.error("Error al consultar los detalles:", itemsError);
+        throw itemsError;
+    }
+
+    sales = salesData.map(function (sale) {
+        const items = itemsData
+            .filter(function (item) {
+                return String(item.sale_id) === String(sale.id);
+            })
+            .map(function (item) {
+                return {
+                    id: item.product_id,
+                    code: item.product_code,
+                    name: item.product_name,
+                    price: Number(item.price),
+                    quantity: Number(item.quantity),
+                    subtotal: Number(item.subtotal),
+                };
+            });
+        
+        return {
+            id: sale.id,
+            date: sale.date,
+            items: items,
+            total: Number(sale.total),
+            paymentMethod: sale.payment_method, 
+            amountReceived: Number(sale.amount_received),
+            change: Number(sale.change_amount)
+        };
+    });
+
+    renderSales();
 }
 
+/* MOSTRAR PRODUCTOS DISPONIBLES */
+function renderProductsOptions() {
+    const previousSelection = productSelect.value;
+
+    const availableProducts = products.filter(function (product) {
+        return Number.isInteger(product.stock) &&
+            product.stock > 0 &&
+            Number.isFinite(product.price) &&
+            product.price > 0;
+    });
+
+    productSelect.innerHTML =
+        '<option value="">Selecciona un producto</option>' +
+        availableProducts.map(function (product) {
+            return `
+                <option value ="${escapeHTML(product.id)}">
+                    ${escapeHTML(product.name)} -
+                    ${formatPrice(product.price)}
+                    (Existencias: ${product.stock})
+                </option>
+            `;
+        }).join("");
+    
+    if (availableProducts.some(function (product) {
+        return String(product.id) === previousSelection;
+    }))  {
+        productSelect = previousSelection;
+    }
+}
 
 /*Obtener total del carrito */
 function getCartTotal () {
@@ -163,30 +226,36 @@ addProductButton.addEventListener("click", function() {
     }
 
     if (!Number.isInteger(quantity) || quantity <1) {
-        productMessage.textContent =
-            "La cantidad debe ser un número entero mayor que cero.";
+        showProductMessage(
+            "La cantidad debe ser un entero mayor que cero.", 
+            "error"
+        );
         return;
     }
 
     const product = products.find(function(item) {
-        return item.id === id;
+        return String(item.id) === id;
     });
 
     if (!product) {
-        productMessage.textContent =
-            "El producto ya no existe. Actualiza la página";
+        showProductMessage(
+            "No se encontró el producto. Actualiza los datos", 
+            "error"
+        );
         return;
     }
 
     const existingItem = cart.find(function(item) {
-        return item.id === id;
+        return String(item.id) === id;
     });
 
-    const quantityInCart = existingItem ? existingItem.quantity : 0;
+    const quantityInCart = existingItem 
+        ? existingItem.quantity 
+        : 0;
 
-    if (quantityInCart + quantity > Number(product.stock)) {
-        productMessage.textContent =
-            "No hay existencias suficientes para esa cantidad", "error";
+    if (quantityInCart + quantity > product.stock) {
+        showProductMessage(
+            "No hay existencias suficientes para esa cantidad", "error");
         return;
     }
 
@@ -197,7 +266,7 @@ addProductButton.addEventListener("click", function() {
             id: product.id,
             code: product.code,
             name: product.name,
-            price: Number(product.price),
+            price: product.price,
             quantity: quantity
         });
     }
@@ -238,16 +307,19 @@ function updatePayment() {
         paymentNotice.textContent =
             paymentMethod.value === "Tarjeta"
             ? "El prototipo registra el pago con tarjeta, pero no procesa el cobro real."
-            : "El prototipo registra la transferencia; verifica el abono en tu cuenta antes de confirmar";
-    }
-
-    if (isCash) {
+            : "Verifica el abono de la transferencia antes de confirmar";
+        changeMessage.textContent="";
+    } else {
         const difference = received - total;
-
-        if (amountReceived.value.trim() === "" || difference <0) {
+    
+        if (
+            amountReceived.value.trim() === "" ||
+            !Number.isFinite(received) ||
+            difference <0
+        ) {
             changeMessage.textContent = total > 0
             ? "El importe recibido es insuficiente"
-            : "Cambio: $0.00";
+            : "Cambio: " + formatPrice(0); 
         } else {
             changeMessage.textContent =
                 "Cambio: " + formatPrice(difference);
@@ -273,6 +345,10 @@ function renderSales() {
             return total + item.quantity;
         }, 0);
 
+        const date = sale.date 
+            ? new Date(sale.date).toLocaleString("es-MX")
+            : "";
+
         return `
             <tr>
                 <td>${escapeHTML(sale.id)}</td>
@@ -296,7 +372,7 @@ function renderSales() {
         formatPrice(revenue);
 }
 
-/* CONFIRMAR VENTA */
+/* REGISTRAR LAS VENTAS EN SUPABASE */
 completeSaleButton.addEventListener("click", function() {
     saleMessage.textContent = "";
     productMessage.textContent = "";
@@ -306,213 +382,96 @@ completeSaleButton.addEventListener("click", function() {
         return;
     }
 
-    const total = getCartTotal();
     const method = paymentMethod.value;
+    const total = getCartTotal();
     const received = Number(amountReceived.value);
-
-    if (method === "Efectivo" && (
-        amountReceived.value.trim() === "" ||
-        !Number.isFinite(received) ||
-        received < total
-    )) {
-        saleMessage.textContent =
-            "El importe recibido no cubre el total de venta";
-            return;
-    }
-
+    
     if (!["Efectivo", "Tarjeta", "Transferencia"].includes(method)) {
         saleMessage.textContent = "Selecciona un método de pago válido";
         return;
     }
 
-    /* Hay que verificar las existencias antes de guardar */
+    if (
+        method === "Efectivo" && 
+        (
+            amountReceived.value.trim() === "" ||
+            !Number.isFinite(received) ||
+            received < total
+        )
+    ) 
+      {
+        saleMessage.textContent =
+            "El importe recibido no cubre el total de la venta";
+        return;
+    }
+
+    /* Comprobación previa; Supabase volverá a checar el stock */
     for (const item of cart) {
         const product = products.find(function(product) {
-            return product.id === item.id;
+            return string(product.id) === item.id;
         });
 
-        if (!product || !Number.isInteger(Number(product.stock)) ||
-            Number(product.stock) < item.quantity) {
+        if (!product || product.stock <item.quantity) {
             saleMessage.textContent =
-                    'No hay existencias suficientes de "' + item.name + '". La venta no se registró. ';
-                    renderProductsOptions();
-                return;
-                }
+                `Existencias insuficientes para ${item.name}.`;
+            return;
         }
+    }
 
-        const previousProducts = products;
-        const previousSales = sales;
+    completeSaleButton.disabled = true;
+    completeSaleButton.textContent = "Registrando...";
 
-        /* Preparar el inventario actualizado */
-        const updatedProducts = products.map(function(product) {
-            const soldItem = cart.find(function(item) {
-                return item.id === product.id;
-            });
+    try {
+        /*
+        *La función SQL register_sale recibe:
+        * p_items, p_payment_method y p_amount_received.
+        * El servidor va a calcular el total y actualizará el inventario.*/
 
-            if (!soldItem) {
-                return product;
-            }
-
+        const itemsForDataBase = cart.map(function (item) {
             return {
-                ...product,
-                stock: Number(product.stock) - soldItem.quantity
+                product_id: item.id,
+                quantity: item.quantity
             };
         });
 
-        const sale = {
-            id: "V-" + Date.now(),
-            date: new Date().toLocaleString("es-MX"),
-            items: cart.map(function(item) {
-                return {
-                    id: item.id,
-                    code: item.code,
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    subtotal: item.price * item.quantity
-                };
-            }),
-            total: total,
-            paymentMethod: method,
-            amountReceived: method === "Efectivo" ? received : total,
-            change: method === "Efectivo" ? received - total : 0
-        };
-
-        /* GUARDAR VENTA, INVENTARIO Y MOVIMIENTOS */
-        try {
-            const originalProductsStorage =
-                localStorage.getItem(PRODUCTS_KEY);
-            const originalSalesStorage =
-                localStorage.getItem(SALES_KEY);
-
-            const originalMovementsStorage =
-                localStorage.getItem(MOVEMENTS_KEY);
-            
-            const savedMovements =
-                originalMovementsStorage === null
-                    ? []
-                    : JSON.parse(originalMovementsStorage);
-            
-            if (!Array.isArray(savedMovements)) {
-                throw new Error("El historial de movimientos no es válido");
+        const { data, error } = await supabaseClient.rpc(
+            "register_sale",
+            {
+                p_items: itemsForDataBase,
+                p_payment_method: method,
+                p_amount_received: method === "Efectivo"
+                    ? received
+                    : total
             }
+        );
 
-            //Crear una salida por cada producto vendido
-            const saleDate = new Date().toISOString();
-
-            const newMovements = cart.map(function(item) {
-                const originalProduct = products.find(function(product) {
-                    return String(product.id) === String(item.id);
-                });
-
-                const updatedProduct = updatedProducts.find(function(product) {
-                    return String(product.id) == String(item.id);
-                });
-
-                if(!originalProduct || !updatedProduct) {
-                    throw new Error (
-                        "No se encontró un producto de la venta."
-                    );
-                }
-
-                return {
-                    id: sale.id + "-" + item.id,
-                    date: saleDate,
-
-                    productId: item.id,
-                    productName: item.name,
-                    productCode: item.code,
-
-                    type: "Salida",
-                    quantity: item.quantity,
-
-                    previousStock: Number(originalProduct.stock),
-                    resultingStock: Number(updatedProduct.stock),
-
-                    notes: "Salida automática por venta" + sale.id
-                };
-            });
-            
-            // Preparar los nuevos historiales
-            const updatedSales = [...sales, sale];
-            const updatedMovements = [
-                ...newMovements,
-                ...savedMovements
-            ];
-
-            try {
-                // Guardar los tres registros
-
-                localStorage.setItem(
-                    PRODUCTS_KEY,
-                    JSON.stringify(updatedProducts)
-                );
-
-                localStorage.setItem(
-                    SALES_KEY,
-                    JSON.stringify(updatedSales)
-                );
-
-                localStorage.setItem(
-                    MOVEMENTS_KEY,
-                    JSON.stringify(updatedMovements)
-                );
-            } catch (error) {
-                //Si llega a fallar el guardado, se intenta restaurar los datos originales
-
-                try {
-                    if (originalProductsStorage === null) {
-                        localStorage.removeItem(PRODUCTS_KEY);
-                    } else {
-                        localStorage.setItem(
-                            SALES_KEY,
-                            originalSalesStorage
-                        );
-                    }
-
-                    if (originalMovementsStorage === null) {
-                        localStorage.removeItem(MOVEMENTS_KEY);
-                    } else {
-                        localStorage.setItem(
-                            MOVEMENTS_KEY,
-                            originalMovementsStorage
-                        );
-                    }
-                }   catch (restoreError) {
-                    console.error(
-                        "No se pudieron restaurar los datos", restoreError
-                    );
-                }
-
-                throw error;
-            }
-
-            //Actualizar los datos en memoria
-            products = updatedProducts;
-            sales = updatedSales;
-            cart = [];
-
-            amountReceived.value = "";
-            productSelect.value = "";
-            quantityInput.value = "1";
-
-            //Actualizar las pantallas
-            renderProductsOptions();
-            renderCart();
-            renderSales();
-
-            saleMessage.textContent =
-                "Venta" + sale.id + " registrada correctamente.";
-        } catch (error) {
-            console.error("Error al registrar la venta", error);
-
-            saleMessage.textContent =
-                "No se pudo guardar la venta. Revisa el almacenamiento del navegador.";
+        if (error) {
+            throw error;
         }
-});
 
-/* PARA INICIAR EL MÓDUÑP */
-loadData();
-renderProductsOptions();
-renderCart();
-renderSales();
+        /* La venta se registra en la bd
+        * Volvemos a consultar el inventario y el historial
+        */
+       cart = [];
+       amountReceived.value = "";
+       quantityInput.value = "1";
+       productSelect.value = "";
+
+       await Promise.all([
+            loadProducts(),
+            loadSales()
+       ]);
+
+       renderCart();
+
+       const saleId = typeof data === "string"
+            ? data
+            : data?.id ?? data?.sale_id;
+        saleMessage.textContent = saleId
+            ? `Venta ${saleId} registrada correctamente.`
+            : "Venta registrada correctamente";
+    } catch (error) {
+
+    }
+}
+          
