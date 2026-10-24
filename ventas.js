@@ -373,7 +373,7 @@ function renderSales() {
 }
 
 /* REGISTRAR LAS VENTAS EN SUPABASE */
-completeSaleButton.addEventListener("click", function() {
+completeSaleButton.addEventListener("click", async function() {
     saleMessage.textContent = "";
     productMessage.textContent = "";
 
@@ -408,7 +408,7 @@ completeSaleButton.addEventListener("click", function() {
     /* Comprobación previa; Supabase volverá a checar el stock */
     for (const item of cart) {
         const product = products.find(function(product) {
-            return string(product.id) === item.id;
+            return String(product.id) === item.id;
         });
 
         if (!product || product.stock <item.quantity) {
@@ -471,7 +471,48 @@ completeSaleButton.addEventListener("click", function() {
             ? `Venta ${saleId} registrada correctamente.`
             : "Venta registrada correctamente";
     } catch (error) {
+        console.error("Error al registrar la venta:", error);
 
+        saleMessage.textContent =
+            "No se pudo registrar la venta: " +
+            (error.message || "Error inesperado.");
+    } finally {
+        completeSaleButton.textContent = "Completar venta";
+        updatePayment();
+    };
+});
+
+/* INICIAR EL MÓDULO */
+async function initializeSales() {
+    completeSaleButton.disabled = true;
+
+    try {
+        const {data, error}  =
+            await supabaseClient.auth.getSession();
+        
+        if (error) {
+            throw error;
+        }
+
+        if (!data.session) {
+            window.location.href = "index.html";
+            return;
+        }
+
+        await Promise.all([
+            loadProducts(),
+            loadSales()
+        ]);
+
+        renderCart();
+    } catch (error) {
+        console.error("Error al iniciar Ventas:", "error");
+
+        saleMessage.textContent =
+            "No se pudieron cargar los datos. " + 
+            "Revisa tu conexión y los permisos de la BD";
+    } finally {
+        updatePayment();
     }
-}
-          
+};
+initializeSales();
