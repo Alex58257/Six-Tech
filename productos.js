@@ -1,57 +1,5 @@
-/* PARA CONFIGURAR EL ALMACENAMIENTO */
-const STORAGE_KEY = "sixtech_products";
-
-/* ALGUNOS EJEMPLOS DE PRODUCTOS */
-const exampleProducts = [
-    {
-        id: "P001",
-        code: "CEL-001",
-        name: "Samsung Galaxy S25",
-        category: "Celulares",
-        price: 13000,
-        stock: 6,
-        minStock: 2
-    },
-
-    {
-        id: "P002",
-        code: "ACC-001",
-        name: "Airpods 4 ANC",
-        category: "Accesorios",
-        price: 3000,
-        stock: 4,
-        minStock: 1
-    },
-    {
-        id: "P003",
-        code: "CEL-002",
-        name: "iPhone 18 Pro Max",
-        category: "Celulares",
-        price: 32000,
-        stock: 7,
-        minStock: 2
-    },
-
-    {
-        id: "P004",
-        code: "ACC-002",
-        name: "SONY WF-C500",
-        category: "Accesorios",
-        price: 1500,
-        stock: 7,
-        minStock: 3
-    },
-
-    {
-        id: "POO5",
-        code: "CEL-003",
-        name: "Samsung Galaxy A57",
-        category: "Celulares",
-        price: 8400,
-        stock: 25,
-        minStock: 8
-    }
-];
+let products = [];
+let currentRole = null;
 
 /* Se muestra los elementos del HTML */
 const productForm = document.getElementById("productForm");
@@ -72,56 +20,8 @@ const productCategory = document.getElementById("productCategory");
 const productPrice = document.getElementById("productPrice");
 const productStock = document.getElementById("productStock");
 const productMinStock = document.getElementById("productMinStock");
-
 const formTitle = document.getElementById("formTitle");
 
-function loadProducts() {
-    try {
-        const savedProducts = localStorage.getItem(STORAGE_KEY);
-
-        if (savedProducts === null) {
-            localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(exampleProducts)
-            );
-
-            return [...exampleProducts];
-        }
-
-        const products = JSON.parse(savedProducts);
-
-        if (!Array.isArray(products)) {
-            throw new Error("Invalid product data");
-        }
-
-        return products;
-    }   catch (error) {
-            console.error("Error al cargar los productos:", error)
-            pageMessage.textContent =
-                "No se pudieron cargar los productos guardados. Revisa el almacenamiento del navegador";
-
-            return [];
-    }
-}
-
-let products = loadProducts();
-
-/* PARA GUARDAR PRODUCTOS */
-function savedProducts() {
-    try {
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(products)
-        );
-
-        return true;
-    }   catch (error) {
-        console.error("Error al guardar productos:", error);
-        pageMessage.textContent =
-            "No se pudieron guardar los cambios. Revisa el almacenamiento disponible del navegador";
-        return false;
-    }
-}
 
 /* El formato será en precio mexicano */
 function formatPrice(price) {
@@ -168,56 +68,143 @@ function getStockStatus(product) {
     };
 }
 
+/* CARGA DE PRODUCTOS DESDE SUPABASE */
+async function loadProducts() {
+    pageMessage.textContent = "Cargando productos...";
+
+    const {data, error } = await supabaseClient
+        .from("products")
+        .select("*")
+        .order("name" , { ascending: true});
+
+    if (error) {
+        console.error("Error al cargar productos", error);
+        pageMessage.textContent =
+            "No se pudieron cargar los productos. Verifica tu sesión y la conexión";
+        return false;
+    }
+
+    //Adaptar los nombre de las columnas de la bd
+    products = data.map(function(product) {
+        return {
+            id: product.id,
+            code: product.code,
+            name: product.name,
+            category: product.category,
+            price: Number(product.price),
+            stock: Number(product.stock),
+            minStock: Number(product.min_stock)
+        };
+    });
+    pageMessage.textContent = "";
+    renderProducts();
+
+    return true;
+}
+
+/* PERMISOS DE LA INTERFAZ */
+async function initializeProducts() {
+    try {
+        const { data: sessionData, error: sessionError } =
+            await supabaseClient.auth.getSession();
+        
+        if (sessionError || !sessionData.session) {
+            window.location.href = "index.html";
+            return;
+        }
+
+        const user = sessionData.session.user;
+
+        const { data: profile, error: profileError} =
+            await supabaseClient
+                .from("profiles")
+                .select("role")
+                .eq("id", user.id)
+                .single();
+        
+        if (profileError || !profile) {
+            pageMessage.textContent =
+                "No se pudo verificar tu perfil. Contacta al administrador";
+            return;
+        }
+
+        currentRole = profile.role;
+
+        const isAdmin = currentRole === "admin";
+
+        //SOLO EL ADMINISTRADOR PUEDE MODIFICAR PRODUCTOS
+        newProductButton.hidden = !isAdmin;
+        productFormSection.hidden = true;
+
+        if(!isAdmin) {
+            pageMessage.textContent =
+                "Modo consulta: puedes revisar el inventario, pero no modificar productos";
+        }
+
+        await loadProducts();
+    } catch (error) {
+        console.error("Error al iniciar Productos:", error);
+        pageMessage.textContent =
+            "Ocurrió un error al abrir el módulo de productos";
+    }
+}
+
+
 /* Renderizar la tabla de productos y las estadísticas */
 
 function renderProducts() {
     const searchTerm = searchInput.value.trim().toLowerCase();
 
     const filteredProducts = products.filter(function(product) {
+        const name = String(product.name ?? "").toLowerCase();
+        const code = String(product.code ?? "").toLowerCase();
         return (
-            product.name.toLowerCase().includes(searchTerm) ||
-            product.code.toLowerCase().includes(searchTerm)
+            name.includes(searchTerm) ||
+            code.includes(searchTerm)
         );
     });
 
     productsTableBody.innerHTML = filteredProducts.map(function(product) {
         const status = getStockStatus(product);
 
+        const actions = currentRole === "admin"
+            ?  `
+                <div class="action">
+                    <button
+                        type="button"
+                        class="action-button edit-button"
+                        data-action="edit"
+                        data-id="${escapeHTML(product.id)}">
+                        Editar
+                    </button> 
+
+                    <button
+                        type="button"
+                        class="action-button delete-button"
+                        data-action="delete"
+                        data-id="${escapeHTML(product.id)}">
+                        Eliminar
+                    </button>
+                </div>
+             `
+             : "Solo consulta";
         return `
             <tr>
                 <td>${escapeHTML(product.code)}</td>
                 <td>${escapeHTML(product.name)}</td>
                 <td>${escapeHTML(product.category)}</td>
-                <td>${escapeHTML(product.price)}</td>
+                <td>${formatPrice(product.price)}</td>
                 <td>${product.stock}</td>
                 <td>
                     <span class="stock-badge ${status.className}">
                         ${status.label}
                     </span>
                 </td>
-                <td>
-                    <div class="actions">
-                        <button
-                            type="button"
-                            class="action-button edit-button"
-                            data-action="edit"
-                            data-id="${escapeHTML(product.id)}">
-                            Editar
-                        </button>
-
-                        <button
-                            type="button"
-                            class="action-button delete-button"
-                            data-action="delete"
-                            data-id="${escapeHTML(product.id)}">
-                            Eliminar
-                        </button>
-                    </div>
-                </td>
+                <td>${actions}</td>
             </tr>
-        `;      
+        `;
     }).join("");
-
+                
     emptyMessage.hidden = filteredProducts.length !==0;
 
     document.getElementById("totalProducts").textContent = 
@@ -245,16 +232,18 @@ function resetProductForm() {
 
 /* Abrir formulario para un nuevo producto */
 newProductButton.addEventListener("click", function() {
+    if (currentRole !== "admin") return;
+
     resetProductForm();
     productFormSection.hidden = false;
-    productCode.focus();
 
     productFormSection.scrollIntoView({
         behavior: "smooth",
         block: "start"
     });
-});
+    productCode.focus();
 
+});
 /* Cancelar formulario */
 cancelButton.addEventListener("click", function() {
     productFormSection.hidden = true;
@@ -262,8 +251,15 @@ cancelButton.addEventListener("click", function() {
 });
 
 /* Registrar o acutalizar un producto */
-productForm.addEventListener("submit", function(event) {
+productForm.addEventListener("submit", async function(event) {
     event.preventDefault();
+
+    if (currentRole !== "admin") {
+        formMessage.textContent = 
+            "No tienes permiso para modificar productos.";
+        return;        
+    }
+
     formMessage.textContent = "";
     pageMessage.textContent = "";
 
@@ -293,7 +289,6 @@ productForm.addEventListener("submit", function(event) {
     ) {
         formMessage.textContent =
             "Revisa los campos. El precio debe ser mayor que cero y las existencias deben ser números enteros no negativos.";
-        
             return;
     }
     const duplicateCode = products.some(function(product) {
@@ -305,56 +300,87 @@ productForm.addEventListener("submit", function(event) {
 
     if (duplicateCode) {
         formMessage.textContent = "Ya existe un producto con ese código";
-
         return;
     }
 
     const productData = {
-        id: id || (
-            "P" + Date.now() + Math.random().toString(36).slice(2, 7)
-        ),
         code: code,
         name: name,
         category: category,
         price: price,
         stock: stock,
-        minStock: minStock
+        min_stock: minStock
     };
 
-    let updatedProducts;
+    const submitButton = productForm.querySelector(
+        'button[type="submit"]'
+    );
 
-    if (id) {
-        updatedProducts = products.map(function(product) {
-            return product.id === id ? productData : product;
-        });
-    } else {
-        updatedProducts = [...products, productData];
+    if (submitButton) {
+        submitButton.disabled = true;
     }
 
-    const previousProducts = products;
-    products = updatedProducts;
+    try{
+        let error;
+        if (id) {
+            //Actualizar los productos existente
+            ({error} = await supabaseClient
+                .from("products")
+                .update(productData)
+                .eq("id", id)
+            );
+        } else {
+            //Creación de un producto nuevo
+            productData.id =
+                "P" + Date.now() +
+                Math.random().toString(36).slice(2,7);
+            
+            ({ error} = await supabaseClient
+                .from("products")
+                .insert(productData)
+            );
+        }
 
-    if (!savedProducts( )) {
-        products = previousProducts;
-        return;
+        if (error) {
+            console.error("Error al guardar producto:", error);
+
+            if (error.code ==="23505") {
+                throw new Error(
+                    "Ya existe un producto con ese código"
+                );
+            }
+
+            throw new Error(
+                "No se pudo guardar el producto. Verifica los permisos y vuelve a intentarlo."
+            );
+        }
+
+        const wasEditing = Boolean(id);
+
+        productFormSection.hidden = true;
+        resetProductForm();
+
+        await loadProducts();
+
+        pageMessage.textContent = wasEditing
+            ? "Producto actualizado correctamente"
+            : "Producto registrado correctamente";
+        
+    } catch (error) {
+        formMessage.textContent = error.message;
+    } finally {
+        if (submitButton) {
+            submitButton.disabled = false;
+        }
     }
-
-    renderProducts();
-    productFormSection.hidden = true;
-    resetProductForm();
-
-    pageMessage.textContent = id
-        ? "Producto actualizado correctamente."
-        : "Producto registrado correctamente";
+    
 });
 
 /* Editar o borrar productos */
-productsTableBody.addEventListener("click", function(event) {
+productsTableBody.addEventListener("click", async function(event) {
     const button = event.target.closest("button[data-action]");
 
-    if (!button) {
-        return;
-    }
+    if (!button || currentRole !== "admin") return; 
 
     const id = button.dataset.id;
     const action = button.dataset.action;
@@ -363,10 +389,8 @@ productsTableBody.addEventListener("click", function(event) {
         return item.id === id;
     });
 
-    if (!product) {
-        return;
-    }
-
+    if (!product) return;
+    
     if (action === "edit") {
         productId.value = product.id;
         productCode.value = product.code;
@@ -394,32 +418,29 @@ productsTableBody.addEventListener("click", function(event) {
             '¿Deseas eliminar el producto "' + product.name + '"?'
         );
 
-        if (!confirmed) {
+        if (!confirmed) return;
+
+        const { error } = await supabaseClient
+            .from("products")
+            .delete()
+            .eq("id", id);
+        if (error) {
+            console.error("Error al eliminar el producto", error);
+            pageMessage.textContent = 
+                "No se pudo eliminar el producto. Puede estar relacionado con registros existentes";
             return;
         }
-
-        const previousProducts = products;
-
-        products = products.filter(function(item) {
-            return item.id !== id;
-        });
-
-        if (!savedProducts()) {
-            products = previousProducts;
-            return;
-        }
-
-        renderProducts();
-        pageMessage.textContent = "Producto eliminado correctamente.";
 
         if (productId.value === id) {
             resetProductForm();
             productFormSection.hidden = true;
         }
+
+        await loadProducts();
+        pageMessage.textContent = "Producto eliminado correctamente"            
     }
 });
-
 /* BUSCAR PRODUCTOS */
 searchInput.addEventListener("input", renderProducts);
 
-renderProducts();
+initializeProducts();

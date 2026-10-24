@@ -1,9 +1,3 @@
-/* PARA CONFIGURAR EL ALMACENAMIENTO */
-
-const PRODUCTS_KEY = "sixtech_products";
-const SALES_KEY = "sixtech_sales";
-const MOVEMENTS_KEY = "sixtech_movements";
-
 /*Elemento del HTML*/
 const productSelect = document.getElementById("productSelect");
 const quantityInput = document.getElementById("quantityInput");
@@ -66,60 +60,61 @@ function escapeHTML(value) {
     });    
 }
 
-/* Cargar los productos y ventas */
-function loadData() {
-    try {
-        const savedProducts = localStorage.getItem(PRODUCTS_KEY);
-        const savedSales = localStorage.getItem(SALES_KEY);
-        
-        products = savedProducts === null
-            ? []
-            : JSON.parse(savedProducts);
-
-        sales = savedSales === null
-            ? []
-            : JSON.parse(savedSales);
-
-        if (!Array.isArray(products) || !Array.isArray(sales)) {
-            throw new Error("Los datos almacenados no tienen el formato esperado.");
-        }
-    }   catch (error) {
-            console.error("Error al cargar los datos:", error);
-            products = [];
-            sales = [];
-            saleMessage.textContent =
-                "No se pudieron leer los datos. Revisa el almacenamiento del navegador";
+/* Cargar los productos desde la BD */
+async function loadProducts() {
+    const {data, error} = await supabaseClient
+        .from("products")
+        .select("id, code, name, category, price, stock, min_stock")
+        .order("name", {asceding: true});
+    if (error) {
+        console.error("Error al cargar productos", error);
+        throw error;
     }
-}
-
-/* MOSTRAR LOS PRODUCTOS DISPONIBLES */
-function renderProductsOptions () {
-    const previousSelection = productSelect.value;
-
-    const availableProducts = products.filter(function(product) {
-        return Number.isInteger(Number(product.stock)) && 
-            Number(product.stock) > 0 &&
-            Number.isFinite(Number(product.price)) &&
-            Number(product.price) > 0;
+    products = data.map(function (product) {
+        return {
+            id: product.id,
+            code: product.code,
+            name: product.name,
+            category: product.category,
+            price: Number(product.price),
+            stock: Number(product.stock),
+            minStock: Number(product.min_stock)
+        };
     });
 
-    productSelect.innerHTML =
-        '<option value="">Selecciona un producto</option>' +
-        availableProducts.map(function(product) {
-            return `
-                <option value="${escapeHTML(product.id)}">
-                    ${escapeHTML(product.name)} - ${formatPrice(product.price)}
-                    (Existencias: ${product.stock})
-                </option>
-            `;
-        }).join("");
-    
-    if (availableProducts.some(function(product) {
-        return product.id === previousSelection;
-    })) {
-        productSelect.value = previousSelection;
-    }
+    renderProductsOptions();
 }
+
+/* CARGAR EL HISTORIAL DESDE SUPABASE */
+async function loadSales() {
+    const { data: salesData, error: salesError } =
+        await supabaseClient
+            .from("sales")
+            .select("*")
+            .order("date" ,{ascending: false});
+    
+    if (salesError) {
+        console.error("Error al consultar las ventas", salesError);
+        throw salesError;
+    }
+    
+    if (salesData.length === 0) {
+        sales = []
+        renderSales()
+        return;
+    }
+
+    const saleIds = salesData.map(function (sale) {
+        return sale.id;
+    });
+
+    const {data: itemData, error: itemsError} =
+        await supabaseClient
+            .from("sale_items")
+            .select("*")
+            .in("sale_id", saleIds);
+}
+
 
 /*Obtener total del carrito */
 function getCartTotal () {
