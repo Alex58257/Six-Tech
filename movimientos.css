@@ -367,3 +367,86 @@ footer {
     background-color: #fff;
     font-weight: 600;
 }
+
+/* Adapatación para TABLETAS */
+@media (max-width: 110px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    
+    .filters-grid > button {
+        width: 100%;
+    }
+}
+
+/* Adapatación para CELULARES */
+@media (max-width: 600px) {
+    .topbar {
+        padding: 14px 4%;
+    }
+
+    .brand h1 {
+        font-size: 20px;
+    }
+
+    .back-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .page-container {
+        width: 94%;
+        padding: 22px 0;
+    }
+
+    .page-heading h2 {
+        font-size: 23px;
+    }
+
+    .stat-grid {
+        gap: 10px;
+    }
+
+    .stat-card span {
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .stat-card strong {
+        font-size: 25px;
+    }
+
+    .panel {
+        padding: 16px;
+    }
+
+    .filters-grid,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-grid > button {
+        width: 100%;
+    }
+
+    .panel-heading {
+        align-items: stretch;
+    }
+
+    .panel-heading h3 {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .panel-heading-button {
+        flex: 1 1 auto;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+}

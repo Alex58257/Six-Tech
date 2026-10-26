@@ -1,5 +1,14 @@
-function cerrarSesion() {
-    window.location.href = "index.html";
+async function cerrarSesion() {
+    const {error} = await supabaseClient.auth.signOut();
+
+    if (error) {
+        console.error("Error al cerrar sesión:", error);
+        alert("No se pudo cerrar la sesión. Intenta nuevamente");
+        return;
+    }
+
+    sessionStorage.removeItem("sixtech_user");
+    window.location.replace("index.html");
 }
 
 const botones = document.querySelectorAll("[data-modulo]");

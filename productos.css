@@ -346,6 +346,7 @@ footer {
     padding: 20px;
     color: #64748b;
     background-color: white;
+    font-weight: 600;
 }
 
 @media (max-width: 700px) {
