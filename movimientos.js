@@ -21,18 +21,23 @@ const endDate = document.getElementById("endDate");
 const clearFiltersButton = document.getElementById("clearFiltersButton");
 
 //Abrir el formulario
-newMovementButton.addEventListener("click" , function() {
+newMovementButton.addEventListener("click" ,() => {
     movementFormPanel.hidden = false;
-    pageMessage.textContent = "";
-
+    movementFormPanel.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
     movementForm.reset();
 });
 
 // Cerrar el formulario 
-cancelMovementButton.addEventListener("click", function() {
-    movementFormPanel.hidden = true;
+cancelMovementButton.addEventListener("click", () => {
     movementForm.reset();
-    pageMessage.textContent = "";
+    movementFormPanel.hidden = true;
+    document.querySelector(".panel-heading").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
 });
 
 // registro el movimiento
@@ -93,6 +98,15 @@ movementForm.addEventListener("submit", async function(event) {
         await loadMovements();
 
         pageMessage.textContent = "Movimiento registrado correctamente.";
+
+        movementForm.reset();
+        movementFormPanel.hidden = true;
+
+        document.querySelector(".panel-heading").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+        
     } catch (error) {
         console.error("Error inesperado:", error);
         pageMessage.textContent =
