@@ -55,7 +55,7 @@ function getStockStatus(product) {
         };
     }
 
-    if (product.stock <= product.minStock) {
+    if (Number(product.stock) <= Number(product.minStock)) {
         return {
             label: "Stock bajo",
             className: "stock-low"
@@ -212,13 +212,27 @@ function renderProducts() {
 
     document.getElementById("totalUnits").textContent =
         products.reduce(function(total, product) {
-            return total + product.stock;
+            return total + Number(product.stock ||0 );
         }, 0);
     
+    // Productos con stock bako, pero que aún tienen existencias.
     document.getElementById("lowStock").textContent =
         products.filter(function(product) {
-            return product.stock <= product.minStock;
+            const stock = Number(product.stock || 0);
+            const minStock = Number(product.minStock || 0);
+
+            return stock > 0 && stock <= minStock;
         }).length;
+
+    //Productos agotados.
+    const outOfStockElement = document.getElementById("outOfStock");
+    
+    if (outOfStockElement) {
+        outOfStockElement.textContent =
+            products.filter(function(product) {
+                return Number(product.stock || 0) === 0;
+            }).length;
+    }
 }
 
 /* Mostrar un formulario limpio */
